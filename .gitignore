@@ -1,0 +1,161 @@
+# Ignore auto-generated files and cache
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Ignore Unity-generated metadata
+*.cs.meta
+*.unity.meta
+*.prefab.meta
+*.asset.meta
+
+# Ignore system-specific files
+.DS_Store
+.DS_Store?
+._*
+.TemporaryItems
+.Trashes
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Ignore crash reports, exceptions, and logs
+*.pidb
+*.suo
+*.svd
+*.pdb
+*.ilk
+*.aps
+*.ncb
+*.opendb
+*.sdf
+*.bak
+*.swp
+*.tmp
+*.log
+*.log*
+
+# Ignore JetBrains Rider / Resharper settings
+.idea/
+*.iml
+
+# Ignore Visual Studio / MonoDevelop files
+.vs/
+.vscode/
+*.csproj
+*.sln*
+*.suo
+*.user
+*.unityproj
+*.booproj
+*.pidb
+*.sln.cache
+
+# Ignore Unity build artifacts
+/Builds/
+/Assets/StreamingAssets/*.apk
+/Assets/StreamingAssets/*.unitypackage
+
+# Ignore local project settings
+/ProjectSettings/EditorBuildSettings.asset
+/ProjectSettings/EditorSettings.asset
+/ProjectSettings/GraphicsSettings.asset
+/ProjectSettings/InputManager.asset
+/ProjectSettings/NavMeshAreas.asset
+/ProjectSettings/ProjectSettings.asset
+/ProjectSettings/QualitySettings.asset
+/ProjectSettings/TagManager.asset
+/ProjectSettings/TimeManager.asset
+/ProjectSettings/UnityConnectSettings.asset
+
+# Ignore Auto-Generated Unity Cache
+Library/
+Temp/
+Logs/
+UserSettings/
+
+# Ignore Play mode state files
+*.playmode
+*.restart
+
+# Ignore Builds
+/Builds/
+/bin/
+/obj/
+/Packages/com.unity.collab-proxy/
+
+# Ignore Unity Collaborate temporary files
+/.collab/
+
+# Ignore Unity Cloud Build files
+/Library/CloudBuild/
+
+# Ignore Addressables build cache
+/Assets/AddressableAssetsData/*.bin
+/Assets/AddressableAssetsData/*.hash
+/Assets/StreamingAssets/*.bundle
+
+# Ignore Git LFS cache
+.git/lfs/
+
+# Ignore TextMeshPro generated files
+/Assets/TextMesh Pro/Resources/*.asset
+
+# Ignore Rider & JetBrains settings
+.idea/
+*.iml
+
+# Ignore temporary ProBuilder files
+/ProBuilderData/
+
+# Ignore Plastic SCM files (if using Unity Version Control)
+PlasticSCM/
+
+# Ignore Unity logs and reports
+*.stacktrace
+*.crash
+*.dmp
+
+# Ignore Unity Package Manager files
+/Packages/*.cache
+/Packages/*.tgz
+/Packages/manifest.json
+/Packages/packages-lock.json
+
+# Ignore Lightmapping / GI cache
+/Library/GICache/
+
+# Ignore Auto-Saved Scene Backups
+/Assets/Scenes/Backup*/
+
+# Ignore Node.js-related files (if using Node-based packages)
+node_modules/
+npm-debug.log
+
+# Ignore Unity Hub-generated temporary files
+/unityhub/
+
+# Ignore Perforce ignore file
+.p4ignore
+
+# Ignore config settings that differ per user
+*.userprefs
+*.code-workspace
+
+# Ignore VS Code workspace settings
+.vscode/
+
+# Ignore Git LFS-tracked files (ensure you add these to Git LFS instead)
+*.psd
+*.fbx
+*.png
+*.jpg
+*.mp4
+*.wav
+*.mp3
+*.blend
+*.unitypackage
