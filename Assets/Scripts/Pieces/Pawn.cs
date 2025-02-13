@@ -2,14 +2,10 @@ using UnityEngine;
 
 public class Pawn : PieceLogic
 {
-    void Start()
-    {
-        pieceType = 'P'; // Indicating it's a Pawn
-    }
 
-    public override bool IsValidMove(Vector3 start, Vector3 end, char pieceType)
+    public override bool IsValidMove(Vector3 start, Vector3 end)
     {
-        // Convert positions to board coordinates (0 to 7)
+        // Convert positions to board coordinates (0 to 7)->(1 to 8)
         int startX = Mathf.RoundToInt(start.x + 3.5f);
         int startY = Mathf.RoundToInt(start.y + 3.5f);
         int endX = Mathf.RoundToInt(end.x + 3.5f);
@@ -24,7 +20,7 @@ public class Pawn : PieceLogic
         }
 
         // First move (two-step move from starting position)
-        if ((isWhite && startY == 1) || (!isWhite && startY == 6))
+        if ((isWhite && startY == 1) || (!isWhite /*isBlack*/ && startY == 6))
         {
             if (endX == startX && endY == startY + (2 * direction))
             {
@@ -32,7 +28,7 @@ public class Pawn : PieceLogic
             }
         }
 
-        // TODO: Add diagonal capturing logic if implementing full chess logic.
+        // To-Do: Add diagonal capturing logic
 
         return false; // If none of the conditions match, move is invalid
     }

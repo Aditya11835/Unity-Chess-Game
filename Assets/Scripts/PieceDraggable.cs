@@ -13,18 +13,18 @@ public class PieceDraggable : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
-        pieceLogic = GetComponent<PieceLogic>(); // Get the attached PieceLogic script
+        pieceLogic = GetComponent<PieceLogic>(); // Get the attached PieceLogic script -> Gets attached subclass script
     }
 
     private void OnMouseDown()
     {
-        offset = transform.position - GetMouseWorldPos();
+        offset = transform.position - GetMouseWorldPos(); //Difference between cursor position and center of sprite
         onClickPosition = transform.position;
     }
 
     private void OnMouseDrag()
     {
-        transform.position = GetMouseWorldPos() + offset;
+        transform.position = GetMouseWorldPos() + offset; //Maintains the difference so sprite doesn't snap to cursor
     }
 
     private void OnMouseUp()
@@ -52,17 +52,16 @@ public class PieceDraggable : MonoBehaviour
         // Validate the move using PieceLogic
         if (pieceLogic != null)
         {
-            char pieceType = pieceLogic.pieceType;
-            if (pieceLogic.IsValidMove(onClickPosition, newPosition, pieceType))
+            if (pieceLogic.IsValidMove(onClickPosition, newPosition))
             {
                 float snappedX = Mathf.Round((newPosition.x - boardOffset.x) / tileSize) * tileSize + boardOffset.x;
                 float snappedY = Mathf.Round((newPosition.y - boardOffset.y) / tileSize) * tileSize + boardOffset.y;
                 transform.position = new Vector3(snappedX, snappedY, 0f);
             }
-            else
-            {
-                transform.position = onClickPosition; // Reset if invalid
-            }
+        }
+        else
+        {
+            transform.position = onClickPosition; // Reset if invalid
         }
     }
 }
