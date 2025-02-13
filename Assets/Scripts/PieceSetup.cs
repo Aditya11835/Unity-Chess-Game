@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PieceSetup : MonoBehaviour
 {
+    public float boardOffset = -3.5f;
     enum FileName
     {
         A, B, C, D, E, F, G, H
@@ -23,37 +24,7 @@ public class PieceSetup : MonoBehaviour
         {10, 8, 9, 11, 12, 9, 8, 10}
     };
 
-    public Dictionary<Vector2Int, GameObject> pieceDictionary = new Dictionary<Vector2Int, GameObject>();
-
-    private void Start()
-    {
-        SetupPieces();
-    }
-
-    public void SetupPieces()
-    {
-        float offset = (8 - 1) / 2f;
-        for (int row = 0; row < 8; row++)
-        {
-            for (int col = 0; col < 8; col++)
-            {
-                GameObject piecePrefab = GetPiecePrefab(piecePositions[row, col]);
-
-                if (piecePrefab != null)
-                {
-                    Vector3 position = new Vector3(col - offset, row - offset, 0);
-                    GameObject piece = Instantiate(piecePrefab, position, Quaternion.identity, piecesParent);
-                    piece.name = $"{piecePrefab.name}_{Enum.GetName(typeof(FileName), col)}";
-                    piece.transform.localScale = new Vector3(4, 4, 0);
-
-                    //  Store piece position in Dictionary
-                    Vector2Int boardPosition = new Vector2Int(col, row);
-                    pieceDictionary[boardPosition] = piece;
-                }
-            }
-        }
-    }
-
+    public Dictionary<Vector2, GameObject> pieceDictionary = new Dictionary<Vector2, GameObject>();
     private GameObject GetPiecePrefab(int pieceCode)
     {
         switch (pieceCode)
@@ -73,4 +44,36 @@ public class PieceSetup : MonoBehaviour
             default: return null;
         }
     }
+    public void SetupPieces()
+    {
+        for (int row = 0; row < 8; row++)
+        {
+            for (int col = 0; col < 8; col++)
+            {
+                GameObject piecePrefab = GetPiecePrefab(piecePositions[row, col]);
+                Vector2 boardPosition = new Vector2(col+boardOffset, row+boardOffset);
+
+                if (piecePrefab != null)
+                {
+                    Vector3 position = new Vector3(col + boardOffset, row + boardOffset, 0);
+                    GameObject piece = Instantiate(piecePrefab, position, Quaternion.identity, piecesParent);
+                    piece.name = $"{piecePrefab.name}_{Enum.GetName(typeof(FileName), col)}";
+                    piece.transform.localScale = new Vector3(4, 4, 0);
+
+                    //  Store piece position in Dictionary
+
+                    pieceDictionary[boardPosition] = piece;
+                }
+            }
+        }
+    }
+
+    private void Start()
+    {
+        SetupPieces();
+        foreach(KeyValuePair<Vector2, GameObject> x in pieceDictionary)
+        {
+            Debug.Log($"{x.Key}: {x.Value}");
+        }
+    }   
 }

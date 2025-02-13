@@ -1,0 +1,113 @@
+using UnityEngine;
+
+public class PawnBehavior : MonoBehaviour
+{
+    private bool isWhite;
+    private Camera cam;
+    private float tileSize = 1.0f;
+    private Vector2 boardOffset = new Vector2(-3.5f, -3.5f);
+    private Vector2 oldPos;
+    private Vector2 newPos;
+    private PieceSetup pieceSetup;
+    private Vector3 cursorOffset;
+    private Vector3 GetMouseWorldPos()
+    {
+        Vector3 mousePoint = Input.mousePosition;
+        mousePoint.z = 0f;
+        return cam.ScreenToWorldPoint(mousePoint);
+    }
+    bool IsCapture(Vector2 oldPos, Vector2 newPos)
+    {
+        int direction = isWhite ? 1 : -1;
+        if (newPos == oldPos + new Vector2(1, direction) || newPos == oldPos + new Vector2(-1,direction))
+        {
+            if (pieceSetup.pieceDictionary.ContainsKey(newPos))
+            {
+                GameObject occupyingPiece = pieceSetup.pieceDictionary[newPos];
+                bool IsWhite = occupyingPiece.name.Contains("White");
+                if (IsWhite != isWhite)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    bool IsLegalMove(Vector2 oldPos, Vector2 newPos)
+    {
+        int direction = isWhite ? 1 : -1;
+        Vector2 forwardMove = new Vector2(oldPos.x, oldPos.y + direction);
+        Vector2 doubleForwardMove = new Vector2(oldPos.x, oldPos.y + (2 * direction));
+        if (newPos == forwardMove && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
+        {
+            return true;
+        }
+        if(newPos == doubleForwardMove && (oldPos.y == -2.5 && isWhite) || (oldPos.y == 2.5 && !isWhite) && !pieceSetup.pieceDictionary.ContainsKey(doubleForwardMove) && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
+        {
+            return true;
+        }
+        if (IsCapture(oldPos, newPos)) 
+        {
+            return true;
+        }
+        return false;
+    }
+    void Start()
+    {
+        cam = Camera.main;
+        pieceSetup = FindAnyObjectByType<PieceSetup>();
+        foreach (var entry in pieceSetup.pieceDictionary)
+        {
+            if (entry.Value == gameObject) // If this GameObject matches the dictionary entry
+            {
+                oldPos = entry.Key; // Get the corresponding position
+                break;
+            }
+        }
+        isWhite = gameObject.name.Contains("White");
+    }
+    private void OnMouseDown()
+    {
+        cursorOffset = transform.position - GetMouseWorldPos(); //Difference between cursor position and center of sprite
+        oldPos = transform.position;
+    }
+    private void OnMouseDrag()
+    {
+        transform.position = GetMouseWorldPos() + cursorOffset; //Maintains the difference so sprite doesn't snap to cursor
+    }
+    private void OnMouseUp()
+    {
+        newPos = GetMouseWorldPos()+cursorOffset;
+        if (newPos.x > 4 || newPos.x < -4 || newPos.y > 4 || newPos.y < -4)
+        {
+            transform.position = oldPos;
+            return;
+        }
+        float snappedX = Mathf.Round((newPos.x - boardOffset.x) / tileSize) * tileSize + boardOffset.x;
+        float snappedY = Mathf.Round((newPos.y - boardOffset.y) / tileSize) * tileSize + boardOffset.y;
+        newPos = new Vector3(snappedX, snappedY, 0);
+        if (IsLegalMove(oldPos, newPos))
+        {
+            if (!IsCapture(oldPos, newPos))
+            {
+                pieceSetup.pieceDictionary.Remove(oldPos);
+                pieceSetup.pieceDictionary[newPos] = gameObject;
+                transform.position = newPos;
+            }
+            else
+            {
+                GameObject capturedPiece = pieceSetup.pieceDictionary[newPos];
+                pieceSetup.pieceDictionary.Remove(newPos);
+                Destroy(capturedPiece);
+                pieceSetup.pieceDictionary.Remove(oldPos);
+                pieceSetup.pieceDictionary[(newPos)] = gameObject;
+                transform.position = newPos;
+            }
+        }
+        else
+        {
+            transform.position = oldPos;
+        }
+
+    }
+}
