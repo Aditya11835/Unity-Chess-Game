@@ -8,10 +8,10 @@
 [Uu]ser[Ss]ettings/
 
 # Ignore Unity-generated metadata
-*.cs.meta
-*.unity.meta
-*.prefab.meta
-*.asset.meta
+!*.cs.meta
+!*.unity.meta
+!*.prefab.meta
+!*.asset.meta
 
 # Ignore system-specific files
 .DS_Store
