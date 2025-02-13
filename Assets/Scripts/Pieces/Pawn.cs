@@ -2,14 +2,15 @@ using UnityEngine;
 
 public class Pawn : PieceLogic
 {
-
     public override bool IsValidMove(Vector3 start, Vector3 end)
     {
         // Convert positions to board coordinates (0 to 7)->(1 to 8)
-        int startX = Mathf.RoundToInt(start.x + 3.5f);
-        int startY = Mathf.RoundToInt(start.y + 3.5f);
-        int endX = Mathf.RoundToInt(end.x + 3.5f);
-        int endY = Mathf.RoundToInt(end.y + 3.5f);
+        int startX = PositionToBoard(start.x);
+        int startY = PositionToBoard(start.y);
+        int endX = PositionToBoard(end.x);
+        int endY = PositionToBoard(end.y);
+        
+        
 
         int direction = isWhite ? 1 : -1; // White pawns move up, black pawns move down
 

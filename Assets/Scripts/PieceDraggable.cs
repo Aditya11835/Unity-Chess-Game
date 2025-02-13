@@ -9,11 +9,13 @@ public class PieceDraggable : MonoBehaviour
     private Vector3 onClickPosition;
     private Vector3 newPosition;
     private PieceLogic pieceLogic;
+    private PieceSetup pieceSetup;
 
     void Start()
     {
         cam = Camera.main;
-        pieceLogic = GetComponent<PieceLogic>(); // Get the attached PieceLogic script -> Gets attached subclass script
+        pieceLogic = GetComponent<PieceLogic>();// Get the attached PieceLogic script -> Gets attached subclass script
+        pieceSetup = GetComponent<PieceSetup>();
     }
 
     private void OnMouseDown()
@@ -57,6 +59,10 @@ public class PieceDraggable : MonoBehaviour
                 float snappedX = Mathf.Round((newPosition.x - boardOffset.x) / tileSize) * tileSize + boardOffset.x;
                 float snappedY = Mathf.Round((newPosition.y - boardOffset.y) / tileSize) * tileSize + boardOffset.y;
                 transform.position = new Vector3(snappedX, snappedY, 0f);
+            }
+            else
+            {
+                transform.position = onClickPosition;
             }
         }
         else

@@ -345,45 +345,36 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5193884138414547586, guid: 601cc4ba3e378bf4c8b848d66007a8c5, type: 3}
   m_PrefabInstance: {fileID: 2406102381587544992}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &834070545
+--- !u!1 &883296029 stripped
 GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 3367863495016727691, guid: 601cc4ba3e378bf4c8b848d66007a8c5, type: 3}
+  m_PrefabInstance: {fileID: 2406102381587544992}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 834070546}
-  - component: {fileID: 834070547}
-  m_Layer: 0
-  m_Name: PieceManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &834070546
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 834070545}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &834070547
+--- !u!114 &883296030
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 834070545}
+  m_GameObject: {fileID: 883296029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f1e85591885578468b1bce83b1e99c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whiteTilePrefab: {fileID: 5136309709205656930, guid: b7729b8d468f94a419495aa4edd2cb6a, type: 3}
+  blackTilePrefab: {fileID: 2514651300489054591, guid: 1fcaeda19dc54034a82aa3d923b8bcb2, type: 3}
+  tileParent: {fileID: 1593203176}
+  rows: 8
+  cols: 8
+  size: 1
+--- !u!114 &883296031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883296029}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fffd396576cc80643a9be6be33a672bb, type: 3}
@@ -491,7 +482,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1593203176}
-  - component: {fileID: 1593203177}
   m_Layer: 0
   m_Name: ChessGrid
   m_TagString: Untagged
@@ -514,23 +504,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 660632214}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1593203177
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1593203175}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f1e85591885578468b1bce83b1e99c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  whiteTilePrefab: {fileID: 5136309709205656930, guid: b7729b8d468f94a419495aa4edd2cb6a, type: 3}
-  blackTilePrefab: {fileID: 2514651300489054591, guid: 1fcaeda19dc54034a82aa3d923b8bcb2, type: 3}
-  rows: 8
-  cols: 8
-  size: 1
 --- !u!1 &1707728791
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,7 +608,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5193884138414547586, guid: 601cc4ba3e378bf4c8b848d66007a8c5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1707728792}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3367863495016727691, guid: 601cc4ba3e378bf4c8b848d66007a8c5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 883296030}
+    - targetCorrespondingSourceObject: {fileID: 3367863495016727691, guid: 601cc4ba3e378bf4c8b848d66007a8c5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 883296031}
   m_SourcePrefab: {fileID: 100100000, guid: 601cc4ba3e378bf4c8b848d66007a8c5, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
@@ -644,5 +623,4 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 619394802}
   - {fileID: 921701644}
-  - {fileID: 834070546}
   - {fileID: 2406102381587544992}

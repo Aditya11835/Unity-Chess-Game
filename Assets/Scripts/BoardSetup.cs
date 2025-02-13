@@ -7,6 +7,7 @@ public class BoardSetup : MonoBehaviour
 
     public GameObject whiteTilePrefab;
     public GameObject blackTilePrefab;
+    public Transform tileParent;
     public int rows = 8;
     public int cols = 8;
     public float size = 1.0f;
@@ -14,7 +15,7 @@ public class BoardSetup : MonoBehaviour
     void Start()
     { 
         GenerateBoard();
-        UnityEngine.Object.FindAnyObjectByType<PieceSetup>().SetupPieces();
+        //UnityEngine.Object.FindAnyObjectByType<PieceSetup>().SetupPieces();
     }
 
     void GenerateBoard()
@@ -23,9 +24,11 @@ public class BoardSetup : MonoBehaviour
         {
             for (int col = 0; col < cols; col++)
             {
-                // Instantiate and position the tile
-                GameObject tile = (row + col) % 2 == 0 ? Instantiate(blackTilePrefab, transform) : Instantiate(whiteTilePrefab, transform);
                 float offset = (size * (rows - 1)) / 2;  // Center the board based on size
+                                                 // Instantiate and position the tile
+                Vector3 position = new Vector3(col * size - offset, row * size - offset, -1);
+                GameObject tile = (row + col) % 2 == 0 ? Instantiate(blackTilePrefab, position, Quaternion.identity, tileParent) : Instantiate(whiteTilePrefab, position, Quaternion.identity, tileParent);
+                
                 tile.transform.localPosition = new Vector3(col * size - offset, row * size - offset, -1);
 
 
