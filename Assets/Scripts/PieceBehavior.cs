@@ -26,7 +26,7 @@ public abstract class PieceBehavior : MonoBehaviour
         }
         return true;
     }
-    protected void OnMouseDown_logic()
+    protected void OnMouseDownLogic()
     {
         oldPos = transform.position;
         cursorOffset = transform.position - GetMouseWorldPos(); //Difference between cursor position and center of sprite
@@ -35,7 +35,7 @@ public abstract class PieceBehavior : MonoBehaviour
             return;
         }
     }
-    protected void OnMouseDrag_logic()
+    protected void OnMouseDragLogic()
     {
         if (!IsTurn()) 
         {
@@ -43,7 +43,7 @@ public abstract class PieceBehavior : MonoBehaviour
         }
         transform.position = GetMouseWorldPos() + cursorOffset; //Maintains the difference so sprite doesn't snap to cursor
     }
-    protected void OnMouseUp_CommonLogic()
+    protected virtual void OnMouseUpLogic()
     {
         if (!IsTurn())
         {
@@ -60,7 +60,7 @@ public abstract class PieceBehavior : MonoBehaviour
         newPos = new Vector3(snappedX, snappedY, 0);
     }
     
-    protected void Setup()
+    protected virtual void Setup()
     {
         cam = Camera.main;
         pieceSetup = FindAnyObjectByType<PieceSetup>();
