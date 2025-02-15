@@ -154,7 +154,6 @@ public class PawnBehavior : MonoBehaviour
             }
             else
             {
-                
                 pieceSetup.pieceDictionary.Remove(oldPos);
                 pieceSetup.pieceDictionary[(newPos)] = gameObject;
                 transform.position = newPos;
