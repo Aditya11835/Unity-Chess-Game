@@ -113,14 +113,13 @@ public class PawnBehavior : MonoBehaviour
     private void OnMouseDown()
     {
         oldPos = transform.position;
+        cursorOffset = transform.position - GetMouseWorldPos(); //Difference between cursor position and center of sprite
         // Ensure only the correct player's pieces can move
         if ((isWhite && !TurnManager.Instance.IsWhiteTurn()) || (!isWhite && TurnManager.Instance.IsWhiteTurn()))
         {
             Debug.Log("It's not " + (isWhite ? "White's" : "Black's") + " turn.");
             return; // Do nothing if it's not this piece's turn
         }
-        cursorOffset = transform.position - GetMouseWorldPos(); //Difference between cursor position and center of sprite
-        
     }
     private void OnMouseDrag()
     {
@@ -165,13 +164,14 @@ public class PawnBehavior : MonoBehaviour
             if (canPromote)
             {
                 Vector2 tempPos = gameObject.transform.position;
-                GameObject piecePrefab = isWhite?pieceSetup.piecePrefabs[8] : pieceSetup.piecePrefabs[9];
+                //GameObject piecePrefab = isWhite ? pieceSetup.piecePrefabs[8] : pieceSetup.piecePrefabs[9];
                 Transform pP = pieceSetup.piecesParent;
+                String name = gameObject.name.Split('_')[1];
                 Destroy(gameObject);
-                GameObject piece = Instantiate(piecePrefab, tempPos, Quaternion.identity, pP);
-                //piece.name = $"{piecePrefab.name}_{Enum.GetName(typeof(pieceSetup.FileName), col)}";
+                GameObject piece = isWhite ? Instantiate(pieceSetup.piecePrefabs[8], tempPos, Quaternion.identity, pP) : Instantiate(pieceSetup.piecePrefabs[9], tempPos, Quaternion.identity, pP);
+                piece.name = $"Promoted_{piece.name.Split('(')[0]}_{name}";
                 piece.transform.localScale = new Vector3(4, 4, 0);
-                pieceSetup.pieceDictionary[piece.transform.position] = piecePrefab;
+                pieceSetup.pieceDictionary[piece.transform.position] = piece;
             }
             // Switch turn after a successful move
             TurnManager.Instance.SwitchTurn();

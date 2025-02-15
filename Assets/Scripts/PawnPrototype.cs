@@ -1,121 +1,128 @@
-using System.Collections.Generic;
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class PawnMovement : MonoBehaviour
+public class PawnBeha : PieceBehavior
 {
-    private PieceSetup pieceSetup;
-    private Vector2Int currentPosition;
-    private bool isWhite;
-    private Vector3 offset;
-    private Vector3 originalPosition;
-    private const float boardOffset = -3.5f;
-
-    private void Start()
+    private bool enPassant;
+    private bool canPromote;
+    public bool getEnPassant()
     {
-        pieceSetup = FindAnyObjectByType<PieceSetup>();
-        currentPosition = GetBoardPosition();
-        isWhite = gameObject.name.Contains("White");
+        return this.enPassant;
     }
-
-    private Vector2Int GetBoardPosition()
+    override protected bool IsCapture(Vector2 oldPos, Vector2 newPos)
     {
-        return new Vector2Int(Mathf.RoundToInt(transform.position.x - boardOffset), Mathf.RoundToInt(transform.position.y - boardOffset));
-    }
-
-    private Vector3 GetWorldPosition(Vector2Int boardPosition)
-    {
-        return new Vector3(boardPosition.x + boardOffset, boardPosition.y + boardOffset, 0);
-    }
-
-    private void OnMouseDown()
-    {
-        originalPosition = transform.position;
-        offset = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    }
-
-    private void OnMouseDrag()
-    {
-        Vector3 newPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + offset;
-        newPosition.z = 0;
-        transform.position = newPosition;
-    }
-
-    private void OnMouseUp()
-    {
-        Vector2Int newPosition = GetBoardPosition();
-        List<Vector2Int> legalMoves = GetLegalMoves();
-
-        if (legalMoves.Contains(newPosition))
+        int direction = isWhite ? 1 : -1;
+        if (newPos == oldPos + new Vector2(1, direction) || newPos == oldPos + new Vector2(-1, direction))
         {
-            Vector3 worldNewPosition = GetWorldPosition(newPosition);
-            Vector3 worldCurrentPosition = GetWorldPosition(currentPosition);
-
-            if (Mathf.Abs(newPosition.x - currentPosition.x) == 1) // Diagonal move (capture)
+            if (pieceSetup.pieceDictionary.ContainsKey(newPos))
             {
-                if (pieceSetup.pieceDictionary.ContainsKey(worldNewPosition))
+                GameObject occupyingPiece = pieceSetup.pieceDictionary[newPos];
+                bool IsWhite = occupyingPiece.name.Contains("White");
+                if (IsWhite != isWhite)
                 {
-                    GameObject capturedPiece = pieceSetup.pieceDictionary[worldNewPosition];
-                    bool targetIsWhite = capturedPiece.name.Contains("White");
-                    if (targetIsWhite != isWhite) // Ensure only opposite color pieces are captured
-                    {
-                        pieceSetup.pieceDictionary.Remove(worldNewPosition);
-                        Destroy(capturedPiece);
-                    }
+                    //GameObject capturedPiece = pieceSetup.pieceDictionary[newPos];
+                    pieceSetup.pieceDictionary.Remove(newPos);
+                    Destroy(occupyingPiece);
+                    return true;
                 }
             }
-
-            pieceSetup.pieceDictionary.Remove(worldCurrentPosition);
-            pieceSetup.pieceDictionary[worldNewPosition] = gameObject;
-            currentPosition = newPosition;
-            transform.position = worldNewPosition;
+            Vector2 enPassantTarget = new Vector2(newPos.x, newPos.y - direction);
+            if (pieceSetup.pieceDictionary.ContainsKey(enPassantTarget))
+            {
+                GameObject adjacentPawn = pieceSetup.pieceDictionary[enPassantTarget];
+                PawnBehavior adjacentPawnBehavior = adjacentPawn.GetComponent<PawnBehavior>();
+                if (adjacentPawnBehavior != null && adjacentPawnBehavior.getEnPassant() && adjacentPawn.name.Contains(isWhite ? "Black" : "White"))
+                {
+                    pieceSetup.pieceDictionary.Remove(enPassantTarget);
+                    Destroy(adjacentPawn);
+                    return true; // En passant capture
+                }
+            }
+        }
+        return false;
+    }
+    override protected bool IsLegalMove(Vector2 oldPos, Vector2 newPos)
+    {
+        int direction = isWhite ? 1 : -1;
+        Vector2 forwardMove = new Vector2(oldPos.x, oldPos.y + direction);
+        Vector2 doubleForwardMove = new Vector2(oldPos.x, oldPos.y + (2 * direction));
+        if (newPos == forwardMove && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
+        {
+            return true;
+        }
+        if (newPos == doubleForwardMove && (oldPos.y == -2.5 && isWhite) || (oldPos.y == 2.5 && !isWhite) && !pieceSetup.pieceDictionary.ContainsKey(doubleForwardMove) && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
+        {
+            enPassant = true;
+            return true;
+        }
+        if (IsCapture(oldPos, newPos))
+        {
+            return true;
+        }
+        return false;
+    }
+    void checkPromote()
+    {
+        if (isWhite)
+        {
+            if (transform.position.y == 3.5)
+            {
+                canPromote = true;
+            }
         }
         else
         {
-            transform.position = originalPosition;
+            if (transform.position.y == -3.5)
+            {
+                canPromote = true;
+            }
         }
     }
-
-    private List<Vector2Int> GetLegalMoves()
+    override protected void Start()
     {
-        List<Vector2Int> moves = new List<Vector2Int>();
-        int direction = isWhite ? 1 : -1;
-        Vector2Int forwardMove = new Vector2Int(currentPosition.x, currentPosition.y + direction);
-        Vector3 worldForwardMove = GetWorldPosition(forwardMove);
-
-        if (!pieceSetup.pieceDictionary.ContainsKey(worldForwardMove) || pieceSetup.pieceDictionary[worldForwardMove] == null)
+        base.Start();
+        canPromote = false;
+    }
+    override protected void OnMouseUp()
+    {
+        base.OnMouseUp();
+        if (IsLegalMove(oldPos, newPos))
         {
-            moves.Add(forwardMove);
-            if ((isWhite && currentPosition.y == 1) || (!isWhite && currentPosition.y == 6))
+            if (!IsCapture(oldPos, newPos))
             {
-                Vector2Int doubleForwardMove = new Vector2Int(currentPosition.x, currentPosition.y + (2 * direction));
-                Vector3 worldDoubleForwardMove = GetWorldPosition(doubleForwardMove);
-                if ((!pieceSetup.pieceDictionary.ContainsKey(worldDoubleForwardMove) || pieceSetup.pieceDictionary[worldDoubleForwardMove] == null) &&
-                    (!pieceSetup.pieceDictionary.ContainsKey(worldForwardMove) || pieceSetup.pieceDictionary[worldForwardMove] == null))
-                {
-                    moves.Add(doubleForwardMove);
-                }
+                pieceSetup.pieceDictionary.Remove(oldPos);
+                pieceSetup.pieceDictionary[newPos] = gameObject;
+                transform.position = newPos;
             }
-        }
-
-        Vector2Int[] diagonalMoves =
-        {
-            new Vector2Int(currentPosition.x - 1, currentPosition.y + direction),
-            new Vector2Int(currentPosition.x + 1, currentPosition.y + direction)
-        };
-
-        foreach (Vector2Int move in diagonalMoves)
-        {
-            Vector3 worldDiagonalMove = GetWorldPosition(move);
-            if (pieceSetup.pieceDictionary.ContainsKey(worldDiagonalMove) && pieceSetup.pieceDictionary[worldDiagonalMove] != null)
+            else
             {
-                GameObject targetPiece = pieceSetup.pieceDictionary[worldDiagonalMove];
-                bool targetIsWhite = targetPiece.name.Contains("White");
-                if (targetIsWhite != isWhite || currentPosition.y == 1 || currentPosition.y == 6)
-                {
-                    moves.Add(move);
-                }
+                pieceSetup.pieceDictionary.Remove(oldPos);
+                pieceSetup.pieceDictionary[(newPos)] = gameObject;
+                transform.position = newPos;
             }
+            if (!canPromote)
+            {
+                checkPromote();
+            }
+            if (canPromote)
+            {
+                Vector2 tempPos = gameObject.transform.position;
+                //GameObject piecePrefab = isWhite ? pieceSetup.piecePrefabs[8] : pieceSetup.piecePrefabs[9];
+                Transform pP = pieceSetup.piecesParent;
+                String name = gameObject.name.Split('_')[1];
+                Destroy(gameObject);
+                GameObject piece = isWhite ? Instantiate(pieceSetup.piecePrefabs[8], tempPos, Quaternion.identity, pP) : Instantiate(pieceSetup.piecePrefabs[9], tempPos, Quaternion.identity, pP);
+                piece.name = $"Promoted_{piece.name.Split('(')[0]}_{name}";
+                piece.transform.localScale = new Vector3(4, 4, 0);
+                pieceSetup.pieceDictionary[piece.transform.position] = piece;
+            }
+            // Switch turn after a successful move
+            TurnManager.Instance.SwitchTurn();
         }
-        return moves;
+        else
+        {
+            transform.position = oldPos;
+        }
     }
 }
