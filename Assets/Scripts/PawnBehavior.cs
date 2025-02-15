@@ -67,12 +67,12 @@ public class PawnBehavior : MonoBehaviour
         {
             return true;
         }
-        if(newPos == doubleForwardMove && (oldPos.y == -2.5 && isWhite) || (oldPos.y == 2.5 && !isWhite) && !pieceSetup.pieceDictionary.ContainsKey(doubleForwardMove) && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
+        else if(newPos == doubleForwardMove && (oldPos.y == -2.5 && isWhite) || (oldPos.y == 2.5 && !isWhite) && !pieceSetup.pieceDictionary.ContainsKey(doubleForwardMove) && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
         {
             enPassant = true;
             return true;
         }
-        if (IsCapture(oldPos, newPos)) 
+        else if (IsCapture(oldPos, newPos)) 
         {
             return true;
         }
@@ -114,27 +114,20 @@ public class PawnBehavior : MonoBehaviour
     {
         oldPos = transform.position;
         cursorOffset = transform.position - GetMouseWorldPos(); //Difference between cursor position and center of sprite
+    }
+    private void OnMouseDrag()
+    {
         // Ensure only the correct player's pieces can move
         if ((isWhite && !TurnManager.Instance.IsWhiteTurn()) || (!isWhite && TurnManager.Instance.IsWhiteTurn()))
         {
             Debug.Log("It's not " + (isWhite ? "White's" : "Black's") + " turn.");
             return; // Do nothing if it's not this piece's turn
         }
-    }
-    private void OnMouseDrag()
-    {
         transform.position = GetMouseWorldPos() + cursorOffset; //Maintains the difference so sprite doesn't snap to cursor
     }
     private void OnMouseUp()
     {
-        // Ensure only the correct player's pieces can move
-        if ((isWhite && !TurnManager.Instance.IsWhiteTurn()) || (!isWhite && TurnManager.Instance.IsWhiteTurn()))
-        {
-            Debug.Log("It's not " + (isWhite ? "White's" : "Black's") + " turn.");
-            transform.position = oldPos; // Reset position to prevent movement
-            return;
-        }
-        newPos = GetMouseWorldPos()+cursorOffset;
+        newPos = transform.position;
         if (newPos.x > 4 || newPos.x < -4 || newPos.y > 4 || newPos.y < -4)
         {
             transform.position = oldPos;
@@ -142,7 +135,7 @@ public class PawnBehavior : MonoBehaviour
         }
         float snappedX = Mathf.Round((newPos.x - boardOffset.x) / tileSize) * tileSize + boardOffset.x;
         float snappedY = Mathf.Round((newPos.y - boardOffset.y) / tileSize) * tileSize + boardOffset.y;
-        newPos = new Vector3(snappedX, snappedY, 0);
+        newPos = new Vector2(snappedX, snappedY);
         if(newPos == oldPos)
         {
             transform.position = oldPos;
