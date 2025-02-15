@@ -58,6 +58,11 @@ public abstract class PieceBehavior : MonoBehaviour
         float snappedX = Mathf.Round((newPos.x - boardOffset.x) / tileSize) * tileSize + boardOffset.x;
         float snappedY = Mathf.Round((newPos.y - boardOffset.y) / tileSize) * tileSize + boardOffset.y;
         newPos = new Vector3(snappedX, snappedY, 0);
+        if (newPos == oldPos)
+        {
+            transform.position = oldPos;
+            return;
+        }
     }
     
     protected virtual void Start()

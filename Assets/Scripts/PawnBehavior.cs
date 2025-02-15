@@ -143,6 +143,11 @@ public class PawnBehavior : MonoBehaviour
         float snappedX = Mathf.Round((newPos.x - boardOffset.x) / tileSize) * tileSize + boardOffset.x;
         float snappedY = Mathf.Round((newPos.y - boardOffset.y) / tileSize) * tileSize + boardOffset.y;
         newPos = new Vector3(snappedX, snappedY, 0);
+        if(newPos == oldPos)
+        {
+            transform.position = oldPos;
+            return;
+        }
         if (IsLegalMove(oldPos, newPos))
         {
             if (!IsCapture(oldPos, newPos))
@@ -164,7 +169,6 @@ public class PawnBehavior : MonoBehaviour
             if (canPromote)
             {
                 Vector2 tempPos = gameObject.transform.position;
-                //GameObject piecePrefab = isWhite ? pieceSetup.piecePrefabs[8] : pieceSetup.piecePrefabs[9];
                 Transform pP = pieceSetup.piecesParent;
                 String name = gameObject.name.Split('_')[1];
                 Destroy(gameObject);
