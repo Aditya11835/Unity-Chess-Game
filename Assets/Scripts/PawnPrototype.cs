@@ -5,7 +5,6 @@ using UnityEngine;
 public class PawnBeha : PieceBehavior
 {
     private bool enPassant;
-    private int enPassantCounter;
     private bool canPromote;
     public bool getEnPassant()
     {
@@ -32,7 +31,7 @@ public class PawnBeha : PieceBehavior
             if (pieceSetup.pieceDictionary.ContainsKey(enPassantTarget))
             {
                 GameObject adjacentPawn = pieceSetup.pieceDictionary[enPassantTarget];
-                PawnBeha adjacentPawnBehavior = adjacentPawn.GetComponent<PawnBeha>();
+                PawnBehavior adjacentPawnBehavior = adjacentPawn.GetComponent<PawnBehavior>();
                 if (adjacentPawnBehavior != null && adjacentPawnBehavior.getEnPassant() && adjacentPawn.name.Contains(isWhite ? "Black" : "White"))
                 {
                     pieceSetup.pieceDictionary.Remove(enPassantTarget);
@@ -55,7 +54,6 @@ public class PawnBeha : PieceBehavior
         if (newPos == doubleForwardMove && (oldPos.y == -2.5 && isWhite) || (oldPos.y == 2.5 && !isWhite) && !pieceSetup.pieceDictionary.ContainsKey(doubleForwardMove) && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
         {
             enPassant = true;
-            enPassantCounter = 1;
             return true;
         }
         if (IsCapture(oldPos, newPos))
@@ -89,21 +87,6 @@ public class PawnBeha : PieceBehavior
     override protected void OnMouseUp()
     {
         base.OnMouseUp();
-        if (enPassantCounter > 0)
-        {
-            enPassantCounter--;
-            if (enPassantCounter == 0)
-            {
-                foreach (var entry in pieceSetup.pieceDictionary)
-                {
-                    if (entry.Value.TryGetComponent<PawnBeha>(out var pawn) &&
-                        pawn.transform.position.y == (pawn.isWhite ? -0.5f : 0.5f))
-                    {
-                        pawn.enPassant = false;
-                    }
-                }
-            }
-        }
         if (IsLegalMove(oldPos, newPos))
         {
             if (!IsCapture(oldPos, newPos))

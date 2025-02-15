@@ -7,7 +7,6 @@ public class PawnBehavior : MonoBehaviour
 {
     private bool isWhite;
     private bool enPassant;
-    private int enPassantCounter;
     private bool canPromote;
     private Camera cam;
     private float tileSize = 1.0f;
@@ -71,7 +70,6 @@ public class PawnBehavior : MonoBehaviour
         if(newPos == doubleForwardMove && (oldPos.y == -2.5 && isWhite) || (oldPos.y == 2.5 && !isWhite) && !pieceSetup.pieceDictionary.ContainsKey(doubleForwardMove) && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
         {
             enPassant = true;
-            enPassantCounter = 1;
             return true;
         }
         if (IsCapture(oldPos, newPos)) 
@@ -141,21 +139,6 @@ public class PawnBehavior : MonoBehaviour
         {
             transform.position = oldPos;
             return;
-        }
-        if (enPassantCounter > 0)
-        {
-            enPassantCounter--;
-            if (enPassantCounter == 0)
-            {
-                foreach (var entry in pieceSetup.pieceDictionary)
-                {
-                    if (entry.Value.TryGetComponent<PawnBehavior>(out var pawn) &&
-                        pawn.transform.position.y == (pawn.isWhite ? -0.5f : 0.5f))
-                    {
-                        pawn.enPassant = false;
-                    }
-                }
-            }
         }
         float snappedX = Mathf.Round((newPos.x - boardOffset.x) / tileSize) * tileSize + boardOffset.x;
         float snappedY = Mathf.Round((newPos.y - boardOffset.y) / tileSize) * tileSize + boardOffset.y;
