@@ -5,7 +5,7 @@ using UnityEngine;
 public class PieceSetup : MonoBehaviour
 {
     public float boardOffset = -3.5f;
-    enum FileName
+   enum FileName
     {
         A, B, C, D, E, F, G, H
     };

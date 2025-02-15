@@ -1,8 +1,13 @@
+using System;
+using System.Linq.Expressions;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PawnBehavior : MonoBehaviour
 {
     private bool isWhite;
+    private bool enPassant;
+    private bool canPromote;
     private Camera cam;
     private float tileSize = 1.0f;
     private Vector2 boardOffset = new Vector2(-3.5f, -3.5f);
@@ -10,6 +15,11 @@ public class PawnBehavior : MonoBehaviour
     private Vector2 newPos;
     private PieceSetup pieceSetup;
     private Vector3 cursorOffset;
+
+    public bool getEnPassant()
+    {
+        return this.enPassant;
+    }
     private Vector3 GetMouseWorldPos()
     {
         Vector3 mousePoint = Input.mousePosition;
@@ -27,7 +37,22 @@ public class PawnBehavior : MonoBehaviour
                 bool IsWhite = occupyingPiece.name.Contains("White");
                 if (IsWhite != isWhite)
                 {
+                    //GameObject capturedPiece = pieceSetup.pieceDictionary[newPos];
+                    pieceSetup.pieceDictionary.Remove(newPos);
+                    Destroy(occupyingPiece);
                     return true;
+                }
+            }
+            Vector2 enPassantTarget = new Vector2(newPos.x, newPos.y - direction);
+            if (pieceSetup.pieceDictionary.ContainsKey(enPassantTarget))
+            {
+                GameObject adjacentPawn = pieceSetup.pieceDictionary[enPassantTarget];
+                PawnBehavior adjacentPawnBehavior = adjacentPawn.GetComponent<PawnBehavior>();
+                if (adjacentPawnBehavior != null && adjacentPawnBehavior.getEnPassant() && adjacentPawn.name.Contains(isWhite ? "Black" : "White"))
+                {
+                    pieceSetup.pieceDictionary.Remove(enPassantTarget);
+                    Destroy(adjacentPawn);
+                    return true; // En passant capture
                 }
             }
         }
@@ -44,6 +69,7 @@ public class PawnBehavior : MonoBehaviour
         }
         if(newPos == doubleForwardMove && (oldPos.y == -2.5 && isWhite) || (oldPos.y == 2.5 && !isWhite) && !pieceSetup.pieceDictionary.ContainsKey(doubleForwardMove) && !pieceSetup.pieceDictionary.ContainsKey(forwardMove))
         {
+            enPassant = true;
             return true;
         }
         if (IsCapture(oldPos, newPos)) 
@@ -51,6 +77,23 @@ public class PawnBehavior : MonoBehaviour
             return true;
         }
         return false;
+    }
+    void checkPromote()
+    {
+        if (isWhite)
+        {
+            if (transform.position.y == 3.5)
+            {
+                canPromote = true;
+            }
+        }
+        else
+        {
+            if(transform.position.y == -3.5)
+            {
+                canPromote = true;
+            }
+        }
     }
     void Start()
     {
@@ -65,11 +108,19 @@ public class PawnBehavior : MonoBehaviour
             }
         }
         isWhite = gameObject.name.Contains("White");
+        canPromote = false;
     }
     private void OnMouseDown()
     {
-        cursorOffset = transform.position - GetMouseWorldPos(); //Difference between cursor position and center of sprite
         oldPos = transform.position;
+        // Ensure only the correct player's pieces can move
+        if ((isWhite && !TurnManager.Instance.IsWhiteTurn()) || (!isWhite && TurnManager.Instance.IsWhiteTurn()))
+        {
+            Debug.Log("It's not " + (isWhite ? "White's" : "Black's") + " turn.");
+            return; // Do nothing if it's not this piece's turn
+        }
+        cursorOffset = transform.position - GetMouseWorldPos(); //Difference between cursor position and center of sprite
+        
     }
     private void OnMouseDrag()
     {
@@ -77,6 +128,13 @@ public class PawnBehavior : MonoBehaviour
     }
     private void OnMouseUp()
     {
+        // Ensure only the correct player's pieces can move
+        if ((isWhite && !TurnManager.Instance.IsWhiteTurn()) || (!isWhite && TurnManager.Instance.IsWhiteTurn()))
+        {
+            Debug.Log("It's not " + (isWhite ? "White's" : "Black's") + " turn.");
+            transform.position = oldPos; // Reset position to prevent movement
+            return;
+        }
         newPos = GetMouseWorldPos()+cursorOffset;
         if (newPos.x > 4 || newPos.x < -4 || newPos.y > 4 || newPos.y < -4)
         {
@@ -96,13 +154,28 @@ public class PawnBehavior : MonoBehaviour
             }
             else
             {
-                GameObject capturedPiece = pieceSetup.pieceDictionary[newPos];
-                pieceSetup.pieceDictionary.Remove(newPos);
-                Destroy(capturedPiece);
+                
                 pieceSetup.pieceDictionary.Remove(oldPos);
                 pieceSetup.pieceDictionary[(newPos)] = gameObject;
                 transform.position = newPos;
             }
+            if (!canPromote)
+            {
+                checkPromote();
+            }
+            if (canPromote)
+            {
+                Vector2 tempPos = gameObject.transform.position;
+                GameObject piecePrefab = isWhite?pieceSetup.piecePrefabs[8] : pieceSetup.piecePrefabs[9];
+                Transform pP = pieceSetup.piecesParent;
+                Destroy(gameObject);
+                GameObject piece = Instantiate(piecePrefab, tempPos, Quaternion.identity, pP);
+                //piece.name = $"{piecePrefab.name}_{Enum.GetName(typeof(pieceSetup.FileName), col)}";
+                piece.transform.localScale = new Vector3(4, 4, 0);
+                pieceSetup.pieceDictionary[piece.transform.position] = piecePrefab;
+            }
+            // Switch turn after a successful move
+            TurnManager.Instance.SwitchTurn();
         }
         else
         {
