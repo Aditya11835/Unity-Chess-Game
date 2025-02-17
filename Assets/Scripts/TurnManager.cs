@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,7 +6,17 @@ public class TurnManager : MonoBehaviour
 {
     public static TurnManager Instance { get; private set; }
     private bool isWhiteTurn = true;
+    private KeyValuePair<Vector2, Vector2> lastMove;
     public Text turnText; // Assign in Unity Inspector
+
+    public KeyValuePair<Vector2, Vector2> GetLastMove()
+    {
+        return lastMove;
+    }
+    public void SetLastMove(KeyValuePair<Vector2, Vector2> move)
+    {
+        lastMove = move;
+    }
 
     private void Awake()
     {

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 61920940049780162}
   - component: {fileID: 7075653623420126565}
   - component: {fileID: 3948365260569677582}
-  - component: {fileID: -6808835077948280361}
+  - component: {fileID: -2007687211238353420}
   m_Layer: 0
   m_Name: BlackPawn
   m_TagString: Untagged
@@ -163,7 +163,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-6808835077948280361
+--- !u!114 &-2007687211238353420
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -172,6 +172,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 2371863475112133223}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75ce4f79c26e4cb4cb77163a9da965c7, type: 3}
+  m_Script: {fileID: 11500000, guid: ec6aae7b29378ad49a25f9097fb991b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
