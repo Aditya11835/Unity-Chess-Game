@@ -43,6 +43,7 @@ public class TurnManager : MonoBehaviour
 
     public void SwitchTurn()
     {
+        Debug.Log($"Last move: {lastMove}"); // Remove later
         isWhiteTurn = !isWhiteTurn;
         UpdateTurnText();
     }

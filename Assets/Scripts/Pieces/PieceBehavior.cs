@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class PieceBehavior : MonoBehaviour
 {
-    protected bool isWhite;
+    public bool isWhite;
     protected Camera cam;
     protected float tileSize = 1.0f;
     protected Vector2 boardOffset = new Vector2(-3.5f, -3.5f);
