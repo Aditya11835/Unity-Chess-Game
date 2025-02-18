@@ -54,7 +54,6 @@ public class PawnMovement : PieceBehavior
 
     protected override void hook()
     {
-        base.hook();
         List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
 
         foreach (Vector2 legalMove in legalMoves)

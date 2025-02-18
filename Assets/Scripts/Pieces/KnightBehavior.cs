@@ -4,43 +4,6 @@ using UnityEngine;
 
 public class KnightBehavior : PieceBehavior
 {
-    protected override void OnMouseUp()
-    {
-        base.OnMouseUp();
-    }
-    protected override void hook()
-    {
-        base.hook();
-        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
-
-        foreach (Vector2 legalMove in legalMoves)
-        {
-            if (newPos == legalMove)
-            {
-                // **Check if the move is a capture**
-                if (IsCapture(oldPos, newPos))
-                {
-                    GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
-                    pieceSetup.pieceDictionary.Remove(newPos); //  Remove from dictionary first
-                    Destroy(targetPiece); //  Then destroy the object
-                }
-
-                // **Move the knight in dictionary**
-                pieceSetup.pieceDictionary.Remove(oldPos);
-                pieceSetup.pieceDictionary[newPos] = gameObject;
-                transform.position = newPos;
-
-                turnFinished = true;
-                return;
-            }
-        }
-
-        // **Invalid move, revert position**
-        transform.position = oldPos;
-        turnFinished = false;
-    }
-
-
     protected override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
     {
         List<Vector2> legalMoves = new List<Vector2>();

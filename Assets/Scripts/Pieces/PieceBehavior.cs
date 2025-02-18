@@ -86,5 +86,34 @@ public abstract class PieceBehavior : MonoBehaviour
             return;
         }
     }
-    protected virtual void hook() { }
+    protected virtual void hook() {
+        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
+
+        foreach (Vector2 legalMove in legalMoves)
+        {
+            if (newPos == legalMove)
+            {
+                // **Check if the move is a capture**
+                if (IsCapture(oldPos, newPos))
+                {
+                    GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
+                    pieceSetup.pieceDictionary.Remove(newPos); //  Remove from dictionary first
+                    Destroy(targetPiece); //  Then destroy the object
+                }
+
+                // **Move the piece in dictionary**
+                pieceSetup.pieceDictionary.Remove(oldPos);
+                pieceSetup.pieceDictionary[newPos] = gameObject;
+                transform.position = newPos;
+
+                turnFinished = true;
+                return;
+            }
+        }
+
+        // **Invalid move, revert position**
+        transform.position = oldPos;
+        turnFinished = false;
+    }
 }
+
