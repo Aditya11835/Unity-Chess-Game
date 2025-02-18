@@ -44,6 +44,27 @@ public class PieceSetup : MonoBehaviour
             default: return null;
         }
     }
+
+    private void AttachPieceScript(GameObject piece, int pieceCode)
+{
+    switch (pieceCode)
+    {
+        case 1: piece.AddComponent<PawnMovement>(); break;  // White Pawn
+        case 7: piece.AddComponent<PawnMovement>(); break;  // Black Pawn
+        case 2: piece.AddComponent<KnightBehavior>(); break;  // White Knight
+        case 8: piece.AddComponent<KnightBehavior>(); break;  // Black Knight
+        case 3: piece.AddComponent<BishopBehavior>(); break;  // White Bishop
+        case 9: piece.AddComponent<BishopBehavior>(); break;  // Black Bishop
+        case 4: piece.AddComponent<RookBehavior>(); break;  // White Rook
+        case 10: piece.AddComponent<RookBehavior>(); break;  // Black Rook
+        //case 5: piece.AddComponent<QueenBehavior>(); break;  // White Queen
+        //case 11: piece.AddComponent<QueenBehavior>(); break;  // Black Queen
+        //case 6: piece.AddComponent<KingBehavior>(); break;  // White King
+        //case 12: piece.AddComponent<KingBehavior>(); break;  // Black King
+    }
+}
+
+
     public void SetupPieces()
     {
         for (int row = 0; row < 8; row++)
@@ -58,6 +79,7 @@ public class PieceSetup : MonoBehaviour
                     Vector3 position = new Vector3(col + boardOffset, row + boardOffset, 0);
                     GameObject piece = Instantiate(piecePrefab, position, Quaternion.identity, piecesParent);
                     piece.name = $"{piecePrefab.name}_{Enum.GetName(typeof(FileName), col)}";
+                    AttachPieceScript(piece, piecePositions[row, col]);
                     piece.transform.localScale = new Vector3(4, 4, 0);
 
                     //  Store piece position in Dictionary

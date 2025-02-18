@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 347780397387106374}
   - component: {fileID: 2470435201555896647}
   - component: {fileID: 978604353899758325}
-  - component: {fileID: -7805467268669364471}
   m_Layer: 0
   m_Name: WhiteKnight
   m_TagString: Untagged
@@ -163,16 +162,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-7805467268669364471
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 535003646045242210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba7d0c89696e17b4ca230faec36a8a06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isWhite: 0

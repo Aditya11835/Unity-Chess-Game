@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 1975947089219150452}
   - component: {fileID: 3732475279900759347}
   - component: {fileID: 1372848085849725528}
-  - component: {fileID: -8524296591044101077}
   m_Layer: 0
   m_Name: BlackKnight
   m_TagString: Untagged
@@ -163,16 +162,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-8524296591044101077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5918496504415442125}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba7d0c89696e17b4ca230faec36a8a06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isWhite: 0

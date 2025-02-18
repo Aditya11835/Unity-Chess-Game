@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4019238123791449959}
   - component: {fileID: 5389319273176266691}
   - component: {fileID: 3783342911361536869}
-  - component: {fileID: -2961854334312358930}
   m_Layer: 0
   m_Name: WhiteRook
   m_TagString: Untagged
@@ -163,16 +162,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-2961854334312358930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2391143495223772533}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da6fdea9123981d4fa498aa2704e9654, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isWhite: 0
