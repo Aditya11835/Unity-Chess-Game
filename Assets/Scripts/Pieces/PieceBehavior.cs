@@ -14,7 +14,26 @@ public abstract class PieceBehavior : MonoBehaviour
     protected bool turnFinished = false;
 
     protected abstract List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos);
-    protected abstract bool IsCapture(Vector2 oldPos, Vector2 newPos);
+    protected virtual bool IsCapture(Vector2 oldPos, Vector2 newPos)
+    {
+        // **Ensure the target position has a piece**
+        if (!pieceSetup.pieceDictionary.ContainsKey(newPos))
+        {
+            return false; // No piece to capture
+        }
+
+        GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
+
+        // **Ensure the target piece has PieceBehavior (prevents errors)**
+        PieceBehavior targetPieceBehavior = targetPiece.GetComponent<PieceBehavior>();
+        if (targetPieceBehavior == null)
+        {
+            return false; // Not a valid piece
+        }
+
+        // **Check if it's an opponent piece**
+        return targetPieceBehavior.isWhite != isWhite;
+    }
 
     protected bool IsWithinBoard(Vector2 position)
     {

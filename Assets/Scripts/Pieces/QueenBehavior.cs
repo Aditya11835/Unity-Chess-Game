@@ -1,52 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RookBehavior : PieceBehavior
+public class QueenBehavior : PieceBehavior
 {
-    bool hasNotMoved = true;
-
-    protected override void hook()
-    {
-        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
-
-        foreach (Vector2 legalMove in legalMoves)
-        {
-            if (newPos == legalMove)
-            {
-                // **Check if the move is a capture**
-                if (IsCapture(oldPos, newPos))
-                {
-                    GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
-                    pieceSetup.pieceDictionary.Remove(newPos); //  Remove from dictionary first
-                    Destroy(targetPiece); //  Then destroy the object
-                }
-
-                // **Move the piece in dictionary**
-                pieceSetup.pieceDictionary.Remove(oldPos);
-                pieceSetup.pieceDictionary[newPos] = gameObject;
-                transform.position = newPos;
-                if (hasNotMoved)
-                {
-                    hasNotMoved = false;
-                }
-
-                turnFinished = true;
-                return;
-            }
-        }
-
-        // **Invalid move, revert position**
-        transform.position = oldPos;
-        turnFinished = false;
-    }
     protected override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
     {
         List<Vector2> legalMoves = new List<Vector2>();
         if (pieceSetup.pieceDictionary == null) return legalMoves;
 
-        // **Define Rook's Four Directions**
+        // **Define Queen's Eight Directions**
         Vector2[] directions = new Vector2[]
         {
+        new Vector2( 1,  1),  // Diagonal Up Right
+        new Vector2(-1,  1),  // Diagonal Up Left
+        new Vector2( 1,  -1),  // Diagonal Down Right
+        new Vector2(-1, -1),   // Diagonal Down Left
         new Vector2( 1,  0),  // Right (+X)
         new Vector2(-1,  0),  // Left (-X)
         new Vector2( 0,  1),  // Up (+Y)
@@ -68,7 +36,7 @@ public class RookBehavior : PieceBehavior
                     {
                         legalMoves.Add(nextPos);
                     }
-                    break; // **Stop moving further in this direction (rook can't jump)**
+                    break; // **Stop moving further in this direction (queen can't jump)**
                 }
 
                 // **Empty square, add as legal move**
@@ -80,4 +48,3 @@ public class RookBehavior : PieceBehavior
         return legalMoves;
     }
 }
-

@@ -57,8 +57,8 @@ public class PieceSetup : MonoBehaviour
         case 9: piece.AddComponent<BishopBehavior>(); break;  // Black Bishop
         case 4: piece.AddComponent<RookBehavior>(); break;  // White Rook
         case 10: piece.AddComponent<RookBehavior>(); break;  // Black Rook
-        //case 5: piece.AddComponent<QueenBehavior>(); break;  // White Queen
-        //case 11: piece.AddComponent<QueenBehavior>(); break;  // Black Queen
+        case 5: piece.AddComponent<QueenBehavior>(); break;  // White Queen
+        case 11: piece.AddComponent<QueenBehavior>(); break;  // Black Queen
         //case 6: piece.AddComponent<KingBehavior>(); break;  // White King
         //case 12: piece.AddComponent<KingBehavior>(); break;  // Black King
     }

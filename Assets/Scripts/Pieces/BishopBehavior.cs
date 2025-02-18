@@ -32,7 +32,7 @@ public class BishopBehavior : PieceBehavior
                     {
                         legalMoves.Add(nextPos);
                     }
-                    break; // **Stop moving further in this direction (rook can't jump)**
+                    break; // **Stop moving further in this direction (bishop can't jump)**
                 }
 
                 // **Empty square, add as legal move**
@@ -42,26 +42,6 @@ public class BishopBehavior : PieceBehavior
         }
 
         return legalMoves;
-    }
-    protected override bool IsCapture(Vector2 oldPos, Vector2 newPos)
-    {
-        // **Ensure the target position has a piece**
-        if (!pieceSetup.pieceDictionary.ContainsKey(newPos))
-        {
-            return false; // No piece to capture
-        }
-
-        GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
-
-        // **Ensure the target piece has PieceBehavior (prevents errors)**
-        PieceBehavior targetPieceBehavior = targetPiece.GetComponent<PieceBehavior>();
-        if (targetPieceBehavior == null)
-        {
-            return false; // Not a valid piece
-        }
-
-        // **Check if it's an opponent piece**
-        return targetPieceBehavior.isWhite != isWhite;
     }
 }
 
