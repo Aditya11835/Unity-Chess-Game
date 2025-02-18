@@ -89,7 +89,7 @@ public class PawnMovement : PieceBehavior
                 GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
                 if(targetPiece.GetComponent<PieceBehavior>() == null)
                 {
-                    Debug.Log("Capturing of Non-pawns is not yet written."); return false;
+                    Debug.Log("Capturing logic of this piece is not yet written."); return false;
                 }
                 bool isOpponent = (targetPiece.GetComponent<PieceBehavior>().isWhite != isWhite);
 

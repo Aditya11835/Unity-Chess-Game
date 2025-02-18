@@ -7,6 +7,7 @@ public class TurnManager : MonoBehaviour
     public static TurnManager Instance { get; private set; }
     private bool isWhiteTurn = true;
     private KeyValuePair<Vector2, Vector2> lastMove;
+    private Stack<KeyValuePair<Vector2, Vector2>> movesHistory = new Stack<KeyValuePair<Vector2, Vector2>>();
     public Text turnText; // Assign in Unity Inspector
 
     public KeyValuePair<Vector2, Vector2> GetLastMove()
@@ -44,6 +45,7 @@ public class TurnManager : MonoBehaviour
     public void SwitchTurn()
     {
         Debug.Log($"Last move: {lastMove}"); // Remove later
+        movesHistory.Push(lastMove);
         isWhiteTurn = !isWhiteTurn;
         UpdateTurnText();
     }
