@@ -1,64 +1,101 @@
+using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 
 public class KnightBehavior : PieceBehavior
 {
     protected override void OnMouseUp()
     {
-        base.OnMouseUp();  
+        base.OnMouseUp();
     }
     protected override void hook()
     {
         base.hook();
-        if (IsLegalMove(oldPos, newPos))
-        {
-            pieceSetup.pieceDictionary.Remove(oldPos);
-            pieceSetup.pieceDictionary[newPos] = gameObject;
-            transform.position = newPos;
+        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
 
-            turnFinished = true;
-        }
-        else
+        foreach (Vector2 legalMove in legalMoves)
         {
-            transform.position = oldPos;
-            turnFinished = false;
+            if (newPos == legalMove)
+            {
+                // **Check if the move is a capture**
+                if (IsCapture(oldPos, newPos))
+                {
+                    GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
+                    pieceSetup.pieceDictionary.Remove(newPos); //  Remove from dictionary first
+                    Destroy(targetPiece); //  Then destroy the object
+                }
+
+                // **Move the knight in dictionary**
+                pieceSetup.pieceDictionary.Remove(oldPos);
+                pieceSetup.pieceDictionary[newPos] = gameObject;
+                transform.position = newPos;
+
+                turnFinished = true;
+                return;
+            }
         }
+
+        // **Invalid move, revert position**
+        transform.position = oldPos;
+        turnFinished = false;
     }
 
-    protected override bool IsLegalMove(Vector2 oldPos, Vector2 newPos)
+
+    protected override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
     {
-        if (pieceSetup.pieceDictionary == null) return false; // Ensure dictionary exists
+        List<Vector2> legalMoves = new List<Vector2>();
 
-        Vector2 displacementVector = newPos - oldPos;
+        if (pieceSetup.pieceDictionary == null) return legalMoves; // Ensure dictionary exists
 
-        if (Mathf.Abs(displacementVector.x * displacementVector.y) == 2)
+        // Define all possible knight move offsets (L-shape moves)
+        Vector2[] moveOffsets = new Vector2[]
         {
-            if (pieceSetup.pieceDictionary.ContainsKey(newPos))
+        new Vector2( 1,  2), new Vector2( 1, -2),
+        new Vector2(-1,  2), new Vector2(-1, -2),
+        new Vector2( 2,  1), new Vector2( 2, -1),
+        new Vector2(-2,  1), new Vector2(-2, -1)
+        };
+
+        // Iterate through all possible knight moves
+        foreach (Vector2 offset in moveOffsets)
+        {
+            Vector2 potentialMove = oldPos + offset;
+
+            // Ensure the new position is within board boundaries
+            if (IsWithinBoard(potentialMove))
             {
-                if (IsCapture(oldPos, newPos)){
-                    return true;
+                // If the square is empty or it's an opponent's piece, add it as a valid move
+                if (!pieceSetup.pieceDictionary.ContainsKey(potentialMove) || IsCapture(oldPos, potentialMove))
+                {
+                    legalMoves.Add(potentialMove);
                 }
             }
-            else {
-                return true;
-            }
         }
-        return false;
+
+        return legalMoves;
     }
+
+
 
     protected override bool IsCapture(Vector2 oldPos, Vector2 newPos)
     {
-        GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
-        if (targetPiece.GetComponent<PieceBehavior>() == null)
+        // Ensure the target position exists in the dictionary
+        if (!pieceSetup.pieceDictionary.ContainsKey(newPos))
         {
-            Debug.Log("Capturing logic of this piece is not yet written."); return false;
+            return false; // No piece at the target position
         }
-        bool isOpponent = (targetPiece.GetComponent<PieceBehavior>().isWhite != isWhite);
 
-        if (isOpponent)
+        GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
+
+        // Ensure the target has a PieceBehavior component
+        PieceBehavior targetPieceBehavior = targetPiece.GetComponent<PieceBehavior>();
+        if (targetPieceBehavior == null)
         {
-            pieceSetup.pieceDictionary.Remove(newPos);
-            Destroy(targetPiece);
+            Debug.Log("Capturing logic of this piece is not yet written.");
+            return false;
         }
-        return isOpponent;
+
+        // Capture is valid only if the target is an opponent's piece
+        return targetPieceBehavior.isWhite != isWhite;
     }
 }

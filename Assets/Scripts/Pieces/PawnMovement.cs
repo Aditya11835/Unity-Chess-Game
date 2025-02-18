@@ -12,7 +12,7 @@ public class PawnMovement : PieceBehavior
         {
             canPromote = true;
         }
-        else if(!isWhite && transform.position.y == -3.5)
+        else if (!isWhite && transform.position.y == -3.5)
         {
             canPromote = true;
         }
@@ -55,123 +55,177 @@ public class PawnMovement : PieceBehavior
     protected override void hook()
     {
         base.hook();
+        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
 
-        if (IsLegalMove(oldPos, newPos))
+        foreach (Vector2 legalMove in legalMoves)
         {
-            pieceSetup.pieceDictionary.Remove(oldPos);
-            pieceSetup.pieceDictionary[newPos] = gameObject;
-            transform.position = newPos;
-
-            //  Ensure promotion is checked after moving
-            checkPromote();
-            if (canPromote)
+            if (newPos == legalMove)
             {
-                PromotePawn();
-            }
+                // Check if the move is a capture
+                if (IsCapture(oldPos, newPos))
+                {
+                    // If the destination square is occupied, do a normal capture.
+                    if (pieceSetup.pieceDictionary.ContainsKey(newPos))
+                    {
+                        GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
+                        pieceSetup.pieceDictionary.Remove(newPos);
+                        Destroy(targetPiece);
+                    }
+                    // Otherwise, if newPos is empty, check for en passant capture.
+                    else
+                    {
+                        Vector2 enPassantTargetLocation = new Vector2(newPos.x, oldPos.y);
+                        if (pieceSetup.pieceDictionary.ContainsKey(enPassantTargetLocation))
+                        {
+                            GameObject enPassantTarget = pieceSetup.pieceDictionary[enPassantTargetLocation];
+                            pieceSetup.pieceDictionary.Remove(enPassantTargetLocation); // Remove the en passant target.
+                            Destroy(enPassantTarget);
+                        }
+                    }
+                }
 
-            turnFinished = true;
+                // Move the pawn in dictionary and update its position.
+                pieceSetup.pieceDictionary.Remove(oldPos);
+                pieceSetup.pieceDictionary[newPos] = gameObject;
+                transform.position = newPos;
+                checkPromote();
+                if (canPromote)
+                {
+                    PromotePawn();
+                }
+
+                turnFinished = true;
+                return;
+            }
         }
-        else
-        {
-            transform.position = oldPos;
-            turnFinished = false;
-        }
+
+        // Invalid move: revert position.
+        transform.position = oldPos;
+        turnFinished = false;
     }
+
+
+
 
 
     protected override bool IsCapture(Vector2 oldPos, Vector2 newPos)
     {
         Vector2 moveDirection = isWhite ? Vector2.up : Vector2.down;
+
+        // **Normal diagonal capture**
         if (Mathf.Abs(newPos.x - oldPos.x) == 1 && newPos.y - oldPos.y == moveDirection.y)
         {
             if (pieceSetup.pieceDictionary.ContainsKey(newPos))
             {
                 GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
-                if(targetPiece.GetComponent<PieceBehavior>() == null)
+                if (targetPiece.GetComponent<PieceBehavior>() == null)
                 {
-                    Debug.Log("Capturing logic of this piece is not yet written."); return false;
+                    Debug.Log("Capturing logic of this piece is not yet written.");
+                    return false;
                 }
-                bool isOpponent = (targetPiece.GetComponent<PieceBehavior>().isWhite != isWhite);
 
-                if (isOpponent)
-                {
-                    pieceSetup.pieceDictionary.Remove(newPos);
-                    Destroy(targetPiece);
-                }
-                return isOpponent;
+                return targetPiece.GetComponent<PieceBehavior>().isWhite != isWhite;
             }
 
+            // **En Passant Capture Check**
             Vector2 enPassantTargetLocation = new Vector2(newPos.x, oldPos.y);
             KeyValuePair<Vector2, Vector2> lastMove = TurnManager.Instance.GetLastMove();
 
-            Debug.Log($" En Passant Target Location: {enPassantTargetLocation}");
-            Debug.Log($" Last Move: {lastMove.Key} -> {lastMove.Value}");
-
-            if (!pieceSetup.pieceDictionary.ContainsKey(enPassantTargetLocation))
+            if (IsValidEnPassantMove(oldPos, enPassantTargetLocation, lastMove))
             {
-                Debug.Log(" No piece found at enPassantTargetLocation in dictionary.");
-                return false;
+                return true; //  En Passant capture is valid
             }
-
-            GameObject enPassantTarget = pieceSetup.pieceDictionary[enPassantTargetLocation];
-            if (enPassantTarget == null || enPassantTarget.GetComponent<PawnMovement>() == null)
-            {
-                Debug.Log(" En Passant target is missing or not a pawn.");
-                return false;
-            }
-
-            bool isOpponentPawn = enPassantTarget.GetComponent<PawnMovement>().isWhite != isWhite;
-
-            //  Expected Start and End Positions for En Passant
-            Vector2 expectedStart = lastMove.Key; //  Use the actual starting position from lastMove
-            Vector2 expectedEnd = enPassantTargetLocation;
-
-            Debug.Log($" Expected Start: {expectedStart}, Expected End: {expectedEnd}");
-
-            //  Fix: Use Mathf.Approximately() for floating-point comparisons
-            bool isCorrectStart = Mathf.Approximately(lastMove.Key.x, expectedStart.x) && Mathf.Approximately(lastMove.Key.y, expectedStart.y);
-            bool isCorrectEnd = Mathf.Approximately(lastMove.Value.x, expectedEnd.x) && Mathf.Approximately(lastMove.Value.y, expectedEnd.y);
-
-            if (isOpponentPawn && isCorrectStart && isCorrectEnd)
-            {
-                Debug.Log(" En Passant Capture Successful!");
-                pieceSetup.pieceDictionary.Remove(enPassantTargetLocation);
-                Destroy(enPassantTarget);
-                return true;
-            }
-            else
-            {
-                Debug.Log(" En Passant Conditions Not Met!");
-                return false;
-            }
-
         }
+
         return false;
     }
 
-    protected override bool IsLegalMove(Vector2 oldPos, Vector2 newPos)
+
+
+    protected override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
     {
-        if (pieceSetup.pieceDictionary == null) return false; // Ensure dictionary exists
+        List<Vector2> legalMoves = new List<Vector2>();
+
+        if (pieceSetup.pieceDictionary == null) return legalMoves;
 
         Vector2 moveDirection = isWhite ? Vector2.up : Vector2.down;
         Vector2 startPos = isWhite ? new Vector2(oldPos.x, -2.5f) : new Vector2(oldPos.x, 2.5f);
         bool canDoubleForward = (oldPos == startPos);
 
-        if(newPos == oldPos + moveDirection && !pieceSetup.pieceDictionary.ContainsKey(newPos))
+        // **Normal Forward Moves**
+        Vector2 oneStep = oldPos + moveDirection;
+        if (!pieceSetup.pieceDictionary.ContainsKey(oneStep))
         {
-            return true; //newPos is 1 ahead and it is unoccupied
+            legalMoves.Add(oneStep);
         }
 
-        if(canDoubleForward && newPos == oldPos + moveDirection*2 && !pieceSetup.pieceDictionary.ContainsKey(oldPos + moveDirection) && !pieceSetup.pieceDictionary.ContainsKey(newPos))
+        // **Double Forward Move (if first move)**
+        Vector2 twoSteps = oldPos + moveDirection * 2;
+        if (canDoubleForward && !pieceSetup.pieceDictionary.ContainsKey(oneStep) && !pieceSetup.pieceDictionary.ContainsKey(twoSteps))
         {
-            return true;
+            legalMoves.Add(twoSteps);
         }
 
-        if (IsCapture(oldPos, newPos))
+        // **Capture Moves (Diagonal)**
+        Vector2 leftCapture = oldPos + new Vector2(-1, moveDirection.y);
+        Vector2 rightCapture = oldPos + new Vector2(1, moveDirection.y);
+
+        if (IsCapture(oldPos, leftCapture))
         {
-            return true;
+            legalMoves.Add(leftCapture);
         }
 
-        return false;
+        if (IsCapture(oldPos, rightCapture))
+        {
+            legalMoves.Add(rightCapture);
+        }
+
+        // **Fix En Passant Moves**
+        KeyValuePair<Vector2, Vector2> lastMove = TurnManager.Instance.GetLastMove();
+        Vector2 leftEnPassantTarget = new Vector2(oldPos.x - 1, oldPos.y);
+        Vector2 rightEnPassantTarget = new Vector2(oldPos.x + 1, oldPos.y);
+
+        // **The squares the pawn will land if it captures En Passant**
+        Vector2 leftEnPassantCapture = new Vector2(leftEnPassantTarget.x, oldPos.y + moveDirection.y);
+        Vector2 rightEnPassantCapture = new Vector2(rightEnPassantTarget.x, oldPos.y + moveDirection.y);
+
+        if (IsValidEnPassantMove(oldPos, leftEnPassantTarget, lastMove))
+        {
+            legalMoves.Add(leftEnPassantCapture);
+        }
+
+        if (IsValidEnPassantMove(oldPos, rightEnPassantTarget, lastMove))
+        {
+            legalMoves.Add(rightEnPassantCapture);
+        }
+
+        return legalMoves;
     }
+
+    private bool IsValidEnPassantMove(Vector2 oldPos, Vector2 enPassantTargetLocation, KeyValuePair<Vector2, Vector2> lastMove)
+    {
+        if (!pieceSetup.pieceDictionary.ContainsKey(enPassantTargetLocation))
+        {
+            return false; // No piece at the En Passant capture position
+        }
+
+        GameObject enPassantTarget = pieceSetup.pieceDictionary[enPassantTargetLocation];
+
+        if (enPassantTarget == null || enPassantTarget.GetComponent<PawnMovement>() == null)
+        {
+            return false; // Not a pawn
+        }
+
+        bool isOpponentPawn = enPassantTarget.GetComponent<PawnMovement>().isWhite != isWhite;
+        Vector2 expectedStart = lastMove.Key;
+        Vector2 expectedEnd = lastMove.Value;
+        Vector2 moveDirection = isWhite ? Vector2.down : Vector2.up; // Opponent's movement
+
+        bool movedTwoSteps = Mathf.Approximately(expectedStart.y + (moveDirection.y * 2), expectedEnd.y) &&
+                             Mathf.Approximately(expectedStart.x, expectedEnd.x) &&
+                             Mathf.Approximately(expectedEnd.x, enPassantTargetLocation.x);
+
+        return isOpponentPawn && movedTwoSteps;
+    }
+
 }

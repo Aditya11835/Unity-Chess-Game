@@ -13,8 +13,14 @@ public abstract class PieceBehavior : MonoBehaviour
     protected Vector3 cursorOffset;
     protected bool turnFinished = false;
 
-    protected abstract bool IsLegalMove(Vector2 oldPos, Vector2 newPos);
+    protected abstract List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos);
     protected abstract bool IsCapture(Vector2 oldPos, Vector2 newPos);
+
+    protected bool IsWithinBoard(Vector2 position)
+    {
+        return position.x >= -4.0f && position.x <= 4.0f && position.y >= -4.0f && position.y <= 4.0f;
+    }
+
 
     protected Vector3 GetMouseWorldPos()
     {
