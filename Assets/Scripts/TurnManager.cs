@@ -65,14 +65,6 @@ public class TurnManager : MonoBehaviour
         UpdateTurnText();
         RotateCameraAndPieces();
 
-        // **Check game state after switching turns**
-        Invoke(nameof(CheckGameState), 0.1f); // Small delay to ensure moves are finalized
-    }
-
-    private void CheckGameState()
-    {
-        Debug.Log("[TurnManager] Checking game state...");
-        GameStateManager.Instance.CheckGameState();
     }
 
     private void RotateCameraAndPieces()
