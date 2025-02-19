@@ -3,7 +3,15 @@ using UnityEngine;
 
 public class RookBehavior : PieceBehavior
 {
-    bool hasNotMoved = true;
+    private bool hasNotMoved = true;
+    public bool HasNotMoved
+    {
+        get { return hasNotMoved; }
+    }
+    public void SetHasMoved()
+    {
+        hasNotMoved = false;
+    }
 
     protected override void hook()
     {
