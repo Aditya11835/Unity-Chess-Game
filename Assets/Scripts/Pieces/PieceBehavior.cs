@@ -12,8 +12,9 @@ public abstract class PieceBehavior : MonoBehaviour
     protected PieceSetup pieceSetup;
     protected Vector3 cursorOffset;
     protected bool turnFinished = false;
+    public bool isPawn = false;
 
-    public abstract List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos);
+    public abstract List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos, bool isForCheck);
     protected virtual bool IsCapture(Vector2 oldPos, Vector2 newPos)
     {
         // **Ensure the target position has a piece**
@@ -106,7 +107,7 @@ public abstract class PieceBehavior : MonoBehaviour
         }
     }
     protected virtual void hook() {
-        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
+        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos, false);
 
         foreach (Vector2 legalMove in legalMoves)
         {

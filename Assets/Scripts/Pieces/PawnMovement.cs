@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 public class PawnMovement : PieceBehavior
 {
     private bool canPromote;
+    
     private KeyValuePair<Vector2, Vector2> lastMove;
     void checkPromote()
     {
@@ -19,6 +20,7 @@ public class PawnMovement : PieceBehavior
     }
     protected override void Start()
     {
+        isPawn = true;
         base.Start();
         canPromote = false;
     }
@@ -54,7 +56,7 @@ public class PawnMovement : PieceBehavior
 
     protected override void hook()
     {
-        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
+        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos, false);
 
         foreach (Vector2 legalMove in legalMoves)
         {
@@ -117,11 +119,7 @@ public class PawnMovement : PieceBehavior
             if (pieceSetup.pieceDictionary.ContainsKey(newPos))
             {
                 GameObject targetPiece = pieceSetup.pieceDictionary[newPos];
-                if (targetPiece.GetComponent<PieceBehavior>() == null)
-                {
-                    Debug.Log("Capturing logic of this piece is not yet written.");
-                    return false;
-                }
+                
 
                 return targetPiece.GetComponent<PieceBehavior>().isWhite != isWhite;
             }
@@ -141,9 +139,10 @@ public class PawnMovement : PieceBehavior
 
 
 
-    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
+    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos, bool isForCheck)
     {
         List<Vector2> legalMoves = new List<Vector2>();
+        List<Vector2> captureMoves = new List<Vector2>();
 
         if (pieceSetup.pieceDictionary == null) return legalMoves;
 
@@ -171,12 +170,12 @@ public class PawnMovement : PieceBehavior
 
         if (IsCapture(oldPos, leftCapture))
         {
-            legalMoves.Add(leftCapture);
+            captureMoves.Add(leftCapture);
         }
 
         if (IsCapture(oldPos, rightCapture))
         {
-            legalMoves.Add(rightCapture);
+            captureMoves.Add(rightCapture);
         }
 
         // **Fix En Passant Moves**
@@ -190,12 +189,16 @@ public class PawnMovement : PieceBehavior
 
         if (IsValidEnPassantMove(oldPos, leftEnPassantTarget, lastMove))
         {
-            legalMoves.Add(leftEnPassantCapture);
+            captureMoves.Add(leftEnPassantCapture);
         }
 
         if (IsValidEnPassantMove(oldPos, rightEnPassantTarget, lastMove))
         {
-            legalMoves.Add(rightEnPassantCapture);
+            captureMoves.Add(rightEnPassantCapture);
+        }
+        foreach(Vector2 captureMove in captureMoves)
+        {
+            legalMoves.Add(captureMove);
         }
 
         return legalMoves;

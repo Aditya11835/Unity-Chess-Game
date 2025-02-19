@@ -18,6 +18,7 @@ public class TurnManager : MonoBehaviour
     {
         return lastMove;
     }
+
     public void SetLastMove(KeyValuePair<Vector2, Vector2> move)
     {
         lastMove = move;
@@ -40,7 +41,7 @@ public class TurnManager : MonoBehaviour
     {
         cam = Camera.main;
         GameObject piecesObj = GameObject.Find("Pieces");
-        if(piecesObj != null)
+        if (piecesObj != null)
         {
             pieceParent = piecesObj.transform;
         }
@@ -58,23 +59,29 @@ public class TurnManager : MonoBehaviour
 
     public void SwitchTurn()
     {
-        Debug.Log($"Last move: {lastMove}"); // Remove later
+        Debug.Log($"Last move: {lastMove}");
         movesHistory.Push(lastMove);
         isWhiteTurn = !isWhiteTurn;
         UpdateTurnText();
         RotateCameraAndPieces();
+
+        // **Check game state after switching turns**
+        Invoke(nameof(CheckGameState), 0.1f); // Small delay to ensure moves are finalized
+    }
+
+    private void CheckGameState()
+    {
+        Debug.Log("[TurnManager] Checking game state...");
+        GameStateManager.Instance.CheckGameState();
     }
 
     private void RotateCameraAndPieces()
     {
-        //  Start the smooth rotation coroutine
         StartCoroutine(SmoothRotate(Quaternion.Euler(0, 0, 180), 0.5f));
     }
 
-
     private void UpdateTurnText()
     {
-
         if (turnText != null)
         {
             turnText.text = isWhiteTurn ? "White's Turn" : "Black's Turn";
@@ -88,7 +95,6 @@ public class TurnManager : MonoBehaviour
         Quaternion startCameraRotation = cam.transform.rotation;
         Quaternion targetCameraRotation = startCameraRotation * rotationAmount;
 
-        //  Rotate each piece individually
         Dictionary<Transform, Quaternion> startPieceRotations = new Dictionary<Transform, Quaternion>();
         Dictionary<Transform, Quaternion> targetPieceRotations = new Dictionary<Transform, Quaternion>();
 
@@ -101,26 +107,22 @@ public class TurnManager : MonoBehaviour
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0, 1, elapsed / duration); // Smooth transition
+            float t = Mathf.SmoothStep(0, 1, elapsed / duration);
 
-            //  Apply smooth rotation to the camera
             cam.transform.rotation = Quaternion.Lerp(startCameraRotation, targetCameraRotation, t);
 
-            //  Apply smooth rotation to each piece
             foreach (Transform piece in pieceParent)
             {
                 piece.rotation = Quaternion.Lerp(startPieceRotations[piece], targetPieceRotations[piece], t);
             }
 
-            yield return null; // Wait for next frame
+            yield return null;
         }
 
-        //  Ensure final rotation is exact
         cam.transform.rotation = targetCameraRotation;
         foreach (Transform piece in pieceParent)
         {
             piece.rotation = targetPieceRotations[piece];
         }
     }
-
 }

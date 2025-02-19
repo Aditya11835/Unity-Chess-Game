@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class KnightBehavior : PieceBehavior
 {
-    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
+    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos, bool isForCheck)
     {
         List<Vector2> legalMoves = new List<Vector2>();
 

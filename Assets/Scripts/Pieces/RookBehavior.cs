@@ -15,7 +15,7 @@ public class RookBehavior : PieceBehavior
 
     protected override void hook()
     {
-        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
+        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos, false);
 
         foreach (Vector2 legalMove in legalMoves)
         {
@@ -47,7 +47,7 @@ public class RookBehavior : PieceBehavior
         transform.position = oldPos;
         turnFinished = false;
     }
-    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
+    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos, bool isForCheck)
     {
         List<Vector2> legalMoves = new List<Vector2>();
         if (pieceSetup.pieceDictionary == null) return legalMoves;

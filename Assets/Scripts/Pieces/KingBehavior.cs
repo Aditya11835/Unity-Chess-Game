@@ -5,7 +5,7 @@ public class KingBehavior : PieceBehavior
 {
     private bool canCastle = true; // Track whether the king has moved
 
-    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
+    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos, bool isForCheck)
     {
         List<Vector2> legalMoves = new List<Vector2>();
 
@@ -98,7 +98,7 @@ public class KingBehavior : PieceBehavior
     // ** Override hook to Track King Movement**
     protected override void hook()
     {
-        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos);
+        List<Vector2> legalMoves = GetLegalMoves(oldPos, newPos, false);
 
         foreach (Vector2 legalMove in legalMoves)
         {

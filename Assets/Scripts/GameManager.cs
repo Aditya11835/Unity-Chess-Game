@@ -81,7 +81,7 @@ public class GameStateManager : MonoBehaviour
             PieceBehavior piece = entry.Value.GetComponent<PieceBehavior>();
             if (piece != null && piece.isWhite != king.GetComponent<PieceBehavior>().isWhite)
             {
-                List<Vector2> opponentMoves = piece.GetLegalMoves(piece.transform.position, kingPos);
+                List<Vector2> opponentMoves = piece.GetLegalMoves(piece.transform.position, kingPos, true); // **Pass true to get only capture moves**
 
                 if (opponentMoves.Contains(kingPos))
                 {
@@ -94,6 +94,7 @@ public class GameStateManager : MonoBehaviour
         return false;
     }
 
+
     private bool HasLegalMoves(bool isWhite)
     {
         Debug.Log($"[LegalMoves] Checking if {(isWhite ? "White" : "Black")} has legal moves.");
@@ -103,7 +104,7 @@ public class GameStateManager : MonoBehaviour
             PieceBehavior piece = entry.Value.GetComponent<PieceBehavior>();
             if (piece != null && piece.isWhite == isWhite)
             {
-                List<Vector2> legalMoves = piece.GetLegalMoves(piece.transform.position, piece.transform.position);
+                List<Vector2> legalMoves = piece.GetLegalMoves(piece.transform.position, piece.transform.position, true);
 
                 foreach (Vector2 move in legalMoves)
                 {
