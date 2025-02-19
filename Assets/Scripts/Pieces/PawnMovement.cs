@@ -141,7 +141,7 @@ public class PawnMovement : PieceBehavior
 
 
 
-    protected override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
+    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
     {
         List<Vector2> legalMoves = new List<Vector2>();
 

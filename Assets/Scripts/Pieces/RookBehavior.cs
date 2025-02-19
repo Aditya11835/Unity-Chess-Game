@@ -47,7 +47,7 @@ public class RookBehavior : PieceBehavior
         transform.position = oldPos;
         turnFinished = false;
     }
-    protected override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
+    public override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
     {
         List<Vector2> legalMoves = new List<Vector2>();
         if (pieceSetup.pieceDictionary == null) return legalMoves;

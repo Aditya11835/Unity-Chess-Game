@@ -13,7 +13,7 @@ public abstract class PieceBehavior : MonoBehaviour
     protected Vector3 cursorOffset;
     protected bool turnFinished = false;
 
-    protected abstract List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos);
+    public abstract List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos);
     protected virtual bool IsCapture(Vector2 oldPos, Vector2 newPos)
     {
         // **Ensure the target position has a piece**
