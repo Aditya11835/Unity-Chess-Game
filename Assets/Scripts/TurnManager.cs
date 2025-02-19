@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TurnManager : MonoBehaviour
 {
@@ -51,6 +52,10 @@ public class TurnManager : MonoBehaviour
         }
         UpdateTurnText();
     }
+    private void Update()
+    {
+        CheckForKings();
+    }
 
     public bool IsWhiteTurn()
     {
@@ -60,20 +65,16 @@ public class TurnManager : MonoBehaviour
     public void SwitchTurn()
     {
         Debug.Log($"Last move: {lastMove}");
-        movesHistory.Push(lastMove);
+        movesHistory.Push(lastMove);      
+
+        // **Switch Turn Normally**
         isWhiteTurn = !isWhiteTurn;
         UpdateTurnText();
         RotateCameraAndPieces();
-
-        // **Check game state after switching turns**
-        Invoke(nameof(CheckGameState), 0.1f); // Small delay to ensure moves are finalized
     }
 
-    private void CheckGameState()
-    {
-        Debug.Log("[TurnManager] Checking game state...");
-        GameStateManager.Instance.CheckGameState();
-    }
+
+
 
     private void RotateCameraAndPieces()
     {
@@ -124,5 +125,56 @@ public class TurnManager : MonoBehaviour
         {
             piece.rotation = targetPieceRotations[piece];
         }
+    }
+    private GameObject FindKingObject(bool isWhite)
+    {
+        Transform piecesParent = GameObject.Find("Chessboard/Pieces").transform;
+
+        foreach (Transform piece in piecesParent)
+        {
+            if (isWhite && piece.name.Contains("WhiteKing"))
+            {
+                return piece.gameObject;
+            }
+            else if (!isWhite && piece.name.Contains("BlackKing"))
+            {
+                return piece.gameObject;
+            }
+        }
+        return null; // King not found
+    }
+    private bool CheckForKings()
+    {
+        GameObject whiteKing = FindKingObject(true);
+        GameObject blackKing = FindKingObject(false);
+
+        if (whiteKing == null)
+        {
+            Debug.Log("[Game Over] Black wins! White King is missing.");
+            EndGame("Black Wins!");
+            return false; // Stop the game immediately
+        }
+        else if (blackKing == null)
+        {
+            Debug.Log("[Game Over] White wins! Black King is missing.");
+            EndGame("White Wins!");
+            return false; // Stop the game immediately
+        }
+
+        return true; // Continue game if both kings are still present
+    }
+
+    private void EndGame(string message)
+    {
+        Debug.Log($"[Game Over] {message}");
+
+       
+        enabled = false;
+        Invoke("RestartGame", 3f);  // Restart game
+        
+    }
+    private void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);  // Reload current scene
     }
 }
