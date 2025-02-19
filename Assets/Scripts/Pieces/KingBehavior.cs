@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class KingBehavior : PieceBehavior
 {
-    private bool hasNotMoved = true; // Track whether the king has moved
+    private bool canCastle = true; // Track whether the king has moved
 
     protected override List<Vector2> GetLegalMoves(Vector2 oldPos, Vector2 newPos)
     {
@@ -35,11 +35,12 @@ public class KingBehavior : PieceBehavior
         }
 
         // **Check for Castling**
-        if (hasNotMoved)
+        if (canCastle)  //  Ensure the king hasn't moved before allowing castling
         {
             legalMoves.AddRange(GetCastlingMoves(oldPos));
         }
-        Debug.Log($"King Legal Moves at {oldPos}: {legalMoves.Count}");
+
+        Debug.Log($" King Legal Moves at {oldPos}: {legalMoves.Count}");
         return legalMoves;
     }
 
@@ -67,6 +68,7 @@ public class KingBehavior : PieceBehavior
 
     private bool CanCastle(Vector2 kingPos, Vector2 rookPos)
     {
+
         // **Ensure the rook exists at the expected position**
         if (!pieceSetup.pieceDictionary.ContainsKey(rookPos))
             return false;
@@ -90,7 +92,7 @@ public class KingBehavior : PieceBehavior
             currentPos += step;
         }
 
-        return true; // Castling is allowed
+        return true; //  Castling is allowed
     }
 
     // ** Override hook to Track King Movement**
@@ -103,21 +105,22 @@ public class KingBehavior : PieceBehavior
             if (newPos == legalMove)
             {
                 // **Check if this move is a castling move**
-                if (Mathf.Abs(newPos.x - oldPos.x) == 2) // Castling happens when King moves 2 squares
+                if (Mathf.Abs(newPos.x - oldPos.x) == 2) //  Castling happens when King moves 2 squares
                 {
                     HandleCastling(newPos);
+                    
                 }
 
                 // **Move the King in dictionary**
                 pieceSetup.pieceDictionary.Remove(oldPos);
                 pieceSetup.pieceDictionary[newPos] = gameObject;
                 transform.position = newPos;
-
-                // **If this is the first move, mark king as having moved**
-                if (hasNotMoved)
+                //  Mark the king as having moved
+                if (canCastle)
                 {
-                    hasNotMoved = false;
+                    canCastle = false;
                 }
+
 
                 turnFinished = true;
                 return;
@@ -129,6 +132,7 @@ public class KingBehavior : PieceBehavior
         turnFinished = false;
     }
 
+    // ** Handles the Rook Movement During Castling **
     private void HandleCastling(Vector2 kingNewPos)
     {
         Vector2 rookOldPos, rookNewPos;
@@ -155,7 +159,7 @@ public class KingBehavior : PieceBehavior
             pieceSetup.pieceDictionary[rookNewPos] = rook;
             rook.transform.position = rookNewPos;
 
-            // **Mark the rook as having moved**
+            //  Mark the rook as having moved
             if (rookBehavior != null)
             {
                 rookBehavior.SetHasMoved();
@@ -168,6 +172,4 @@ public class KingBehavior : PieceBehavior
             Debug.LogError($" Castling failed: No rook found at {rookOldPos}");
         }
     }
-
-
 }
